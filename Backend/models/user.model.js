@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 const userSchema = new mongoose.Schema({
@@ -43,9 +43,9 @@ userSchema.methods.matchPassword = async function(password){ //yha hmm db mein s
 userSchema.statics.hashPassword = async function(password){
     return await bcrypt.hash(password,12); //12 is the number of rounds for hashing
 }
-const User = mongoose.model('User', userSchema);
+const userModel = mongoose.model('user', userSchema);
 
-module.exports = User;
+module.exports = userModel;
 
 //abb yha hmne ek user ka schema or model bnaa diya jis se hmme yeah ptaa chlega ki kyaa kyaa data hmmlenge user se
 // kis trh data store krr rhe hai
