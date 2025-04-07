@@ -78,15 +78,49 @@ The error response body will be in JSON format and include the following fields:
             "location": "body"
         },
         {
-            "msg": "First name should be atleast 3 characters long",
-            "param": "fullname.firstname",
-            "location": "body"
-        },
-        {
             "msg": "Password should be atleast 6 characters long",
             "param": "password",
             "location": "body"
         }
     ]
+}
+```
+
+---
+
+## Endpoint: `/users/login`
+
+### Method: `POST`
+
+### Description
+This endpoint is used to authenticate an existing user. It validates the input data, checks the user's credentials, and returns an authentication token along with the user details if the credentials are valid.
+
+---
+
+### Request Body
+The request body must be in JSON format and include the following fields:
+
+| Field      | Type     | Required | Description                                      |
+|------------|----------|----------|--------------------------------------------------|
+| `email`    | `string` | Yes      | A valid email address.                          |
+| `password` | `string` | Yes      | The user's password (minimum 6 characters).     |
+
+#### Example Request Body
+```json
+{
+    "email": "john.doe@example.com",
+    "password": "securePassword123"
+}
+```
+
+---
+
+### Error Response Body
+The error response body will be in JSON format and include the following fields:
+
+#### Example Error Response Body
+```json
+{
+    "message": "Invalid email or password"
 }
 ```
