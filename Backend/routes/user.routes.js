@@ -14,5 +14,10 @@ router.post('/register',
     body('password').isLength({min:6}).withMessage('Password should be atleast 6 characters long')],
     userController.registerUser); //yha jo bhi error aayega validation ke time toh sirf btata hai but agr uss error pe hmme action perform krna hai toh voh krenge uske saath use kiye hua controller ke andr, aur usme use krenge hmm validationResult. 
 
+router.post('/login',[
+    body('email').isEmail().withMessage('Please enter a valid email address'),  //yeah validation ho rhi hai (express vbalidator se)
+    body('password').isLength({min:6}).withMessage('Password should be atleast 6 characters long')
+],userController.loginUser); //yha bhi wahi hoga jo register mein kiya hai
+
 
 module.exports = router;
