@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const {body} = require('express-validator');
 const userController = require('../controllers/user.controller.js');
+const authMiddleware = require('../middlewares/auth.middleware.js');
 
 //sbse pehle hmm agr register user krne ke liye route bnaayenge toh sbse pehle usse validate krna hoga ki yeah jo data
 // mere pass aa rha hai voh valid hai yaa nhi toh uske liye mein ek package install epxress-validator
@@ -19,5 +20,8 @@ router.post('/login',[
     body('password').isLength({min:6}).withMessage('Password should be atleast 6 characters long')
 ],userController.loginUser); //yha bhi wahi hoga jo register mein kiya hai
 
+router.get('/profile', authMiddleware.authUser ,userController.getUserProfile); //yha hmm user ka profile dekhne ke liye route bana rahe hai
+
+router.get('/logout', authMiddleware.authUser, userController.logoutUser);
 
 module.exports = router;

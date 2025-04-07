@@ -1,6 +1,7 @@
 const userModel = require('../models/user.model.js');
 const userService = require('../services/user.service.js');
 const {validationResult} = require('express-validator');
+const blackListTokenModel = require('../models/blacklistToken.model.js')
 
 module.exports.registerUser = async (req,res,next)=>{
     const errors = validationResult(req); //isme errors aayenge jo route mein validate honge
@@ -45,5 +46,19 @@ module.exports.loginUser = async (req,res,next)=>{
 
     const token = user.generateAuthToken(); //yha hmm token generate krne ke liye model mein jaayenge
 
+    res.cookie('token',token); //yha hmm cookie mein token set krr rhe hai taaki cookie se login user ko identify krr paaye
+
     res.status(200).json({token,user}); 
+}
+
+module.exports.getUserProfile = async (req,res,next)=>{
+    res.status(200).json(req.user);
+}
+
+module.exports.logoutUser = async (req,res,next)=>{
+    res.clearCookie('token');
+    const token = req.cookies.token || req.headers.authorization.split(' ')[1];
+    await blackListTokenModel.create({token});
+
+    res.status(200).json({message:'Logged out'});
 }

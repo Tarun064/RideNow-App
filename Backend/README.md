@@ -124,3 +124,94 @@ The error response body will be in JSON format and include the following fields:
     "message": "Invalid email or password"
 }
 ```
+
+---
+
+## Endpoint: `/users/profile`
+
+### Method: `GET`
+
+### Description
+This endpoint is used to retrieve the profile of the currently authenticated user. The user must be logged in and provide a valid authentication token.
+
+---
+
+### Request Headers
+The request must include the following header:
+
+| Header            | Type     | Required | Description                                      |
+|-------------------|----------|----------|--------------------------------------------------|
+| `Authorization`   | `string` | Yes      | A valid JWT token in the format `Bearer <token>`. |
+
+---
+
+### Response
+
+#### Success Response
+- **Status Code:** `200 OK`
+- **Description:** User profile retrieved successfully.
+- **Example Response:**
+```json
+{
+    "_id": "userId",
+    "fullName": {
+        "firstname": "John",
+        "lastname": "Doe"
+    },
+    "email": "john.doe@example.com",
+    "createdAt": "2025-04-07T10:00:00.000Z",
+    "updatedAt": "2025-04-07T10:00:00.000Z"
+}
+```
+
+#### Error Response
+- **Status Code:** `401 Unauthorized`
+- **Description:** User is not authenticated.
+- **Example Response:**
+```json
+{
+    "message": "Unauthorized"
+}
+```
+
+---
+
+## Endpoint: `/users/logout`
+
+### Method: `GET`
+
+### Description
+This endpoint is used to log out the currently authenticated user. It clears the authentication token from the cookies and adds the token to a blacklist to prevent reuse.
+
+---
+
+### Request Headers
+The request must include the following header:
+
+| Header            | Type     | Required | Description                                      |
+|-------------------|----------|----------|--------------------------------------------------|
+| `Authorization`   | `string` | Yes      | A valid JWT token in the format `Bearer <token>`. |
+
+---
+
+### Response
+
+#### Success Response
+- **Status Code:** `200 OK`
+- **Description:** User logged out successfully.
+- **Example Response:**
+```json
+{
+    "message": "Logged out"
+}
+```
+
+#### Error Response
+- **Status Code:** `401 Unauthorized`
+- **Description:** User is not authenticated.
+- **Example Response:**
+```json
+{
+    "message": "Unauthorized"
+}
+```
