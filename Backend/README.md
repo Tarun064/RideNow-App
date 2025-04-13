@@ -223,38 +223,26 @@ The request must include the following header:
 ### Method: `POST`
 
 ### Description
-This endpoint is used to register a new captain. It validates the input data, creates a captain in the database, and returns the captain's details.
+This endpoint is used to register a new captain. It validates the input data, creates a captain in the database, and returns the captain's details along with an authentication token.
 
 ---
 
 ### Request Body
 The request body must be in JSON format and include the following fields:
 
-| Field                     | Type     | Required | Description                                      |
-|---------------------------|----------|----------|--------------------------------------------------|
-| `fullname.firstname`      | `string` | Yes      | The first name of the captain (minimum 3 characters). |
-| `fullname.lastname`       | `string` | No       | The last name of the captain (minimum 3 characters if provided). |
-| `email`                   | `string` | Yes      | A valid email address.                          |
-| `password`                | `string` | Yes      | A password with a minimum of 6 characters.      |
-| `vehicle.color`           | `string` | Yes      | The color of the vehicle (minimum 3 characters). |
-| `vehicle.plate`           | `string` | Yes      | The license plate of the vehicle (minimum 3 characters). |
-| `vehicle.capacity`        | `number` | Yes      | The capacity of the vehicle (minimum 1).        |
-| `vehicle.vehicleType`     | `string` | Yes      | The type of the vehicle (`motorcycle`, `car`, or `auto`). |
-
-#### Example Request Body
 ```json
 {
     "fullname": {
-        "firstname": "Jane",
-        "lastname": "Doe"
+        "firstname": "Jane", // Required, minimum 3 characters
+        "lastname": "Doe" // Optional, minimum 3 characters if provided
     },
-    "email": "jane.doe@example.com",
-    "password": "securePassword123",
+    "email": "jane.doe@example.com", // Required, must be a valid email
+    "password": "securePassword123", // Required, minimum 6 characters
     "vehicle": {
-        "color": "Red",
-        "plate": "ABC123",
-        "capacity": 4,
-        "vehicleType": "car"
+        "color": "Red", // Required, minimum 3 characters
+        "plate": "ABC123", // Required, minimum 3 characters
+        "capacity": 4, // Required, must be an integer >= 1
+        "vehicleType": "car" // Required, must be one of ["motorcycle", "car", "auto"]
     }
 }
 ```
@@ -266,6 +254,7 @@ The response body will be in JSON format and include the following fields:
 
 | Field               | Type     | Description                                      |
 |---------------------|----------|--------------------------------------------------|
+| `token`             | `string` | The generated authentication token.             |
 | `captain._id`       | `string` | The unique identifier of the captain.            |
 | `captain.fullname.firstname` | `string` | The first name of the captain.                 |
 | `captain.fullname.lastname`  | `string` | The last name of the captain.                  |
@@ -280,8 +269,9 @@ The response body will be in JSON format and include the following fields:
 #### Example Response Body
 ```json
 {
+    "token": "generatedAuthToken", // JWT token for authentication
     "captain": {
-        "_id": "captainId",
+        "_id": "captainId", // Unique identifier for the captain
         "fullname": {
             "firstname": "Jane",
             "lastname": "Doe"
@@ -306,6 +296,7 @@ The error response body will be in JSON format and include the following fields:
 
 #### Example Error Response Body
 ```json
+{
     "errors": [
         {
             "msg": "Please enter a valid email address",
@@ -313,13 +304,153 @@ The error response body will be in JSON format and include the following fields:
             "location": "body"
         },
         {
-            "msg": "First name should be atleast 3 characters long",
+            "msg": "First name should be at least 3 characters long",
             "param": "fullname.firstname",
             "location": "body"
         },
         {
-            "msg": "Vehicle type should be either motorcycle, car or auto",
+            "msg": "Vehicle type should be either motorcycle, car, or auto",
             "param": "vehicle.vehicleType",
             "location": "body"
         }
     ]
+}
+```
+
+---
+
+## Endpoint: `/captains/login`
+
+### Method: `POST`
+
+### Description
+This endpoint is used to authenticate an existing captain. It validates the input data, checks the captain's credentials, and returns an authentication token along with the captain's details if the credentials are valid.
+
+---
+
+### Request Body
+The request body must be in JSON format and include the following fields:
+
+| Field      | Type     | Required | Description                                      |
+|------------|----------|----------|--------------------------------------------------|
+| `email`    | `string` | Yes      | A valid email address.                          |
+| `password` | `string` | Yes      | The captain's password (minimum 6 characters).  |
+
+#### Example Request Body
+```json
+{
+    "email": "jane.doe@example.com",
+    "password": "securePassword123"
+}
+```
+
+---
+
+### Error Response Body
+The error response body will be in JSON format and include the following fields:
+
+#### Example Error Response Body
+```json
+{
+    "message": "Invalid email or password"
+}
+```
+
+---
+
+## Endpoint: `/captains/profile`
+
+### Method: `GET`
+
+### Description
+This endpoint is used to retrieve the profile of the currently authenticated captain. The captain must be logged in and provide a valid authentication token.
+
+---
+
+### Request Headers
+The request must include the following header:
+
+| Header            | Type     | Required | Description                                      |
+|-------------------|----------|----------|--------------------------------------------------|
+| `Authorization`   | `string` | Yes      | A valid JWT token in the format `Bearer <token>`. |
+
+---
+
+### Response
+
+#### Success Response
+- **Status Code:** `200 OK`
+- **Description:** Captain profile retrieved successfully.
+- **Example Response:**
+```json
+{
+    "_id": "captainId",
+    "fullname": {
+        "firstname": "Jane",
+        "lastname": "Doe"
+    },
+    "email": "jane.doe@example.com",
+    "vehicle": {
+        "color": "Red",
+        "plate": "ABC123",
+        "capacity": 4,
+        "vehicleType": "car"
+    },
+    "createdAt": "2025-04-07T10:00:00.000Z",
+    "updatedAt": "2025-04-07T10:00:00.000Z"
+}
+```
+
+#### Error Response
+- **Status Code:** `401 Unauthorized`
+- **Description:** Captain is not authenticated.
+- **Example Response:**
+```json
+{
+    "message": "Unauthorized"
+}
+```
+
+---
+
+## Endpoint: `/captains/logout`
+
+### Method: `GET`
+
+### Description
+This endpoint is used to log out the currently authenticated captain. It clears the authentication token from the cookies and adds the token to a blacklist to prevent reuse.
+
+---
+
+### Request Headers
+The request must include the following header:
+
+| Header            | Type     | Required | Description                                      |
+|-------------------|----------|----------|--------------------------------------------------|
+| `Authorization`   | `string` | Yes      | A valid JWT token in the format `Bearer <token>`. |
+
+---
+
+### Response
+
+#### Success Response
+- **Status Code:** `200 OK`
+- **Description:** Captain logged out successfully.
+- **Example Response:**
+```json
+{
+    "message": "Logged out"successfully"
+}
+```
+
+#### Error Response
+- **Status Code:** `401 Unauthorized`
+- **Description:** Captain is not authenticated.
+- **Example Response:**
+```json
+{
+    "message": "Unauthorized"
+}
+```
+
+---

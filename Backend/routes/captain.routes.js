@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const {body} = require('express-validator');
 const captainController = require('../controllers/captain.controller.js');
+const authMiddleware = require('../middlewares/auth.middleware.js');
 
 router.post('/register',
     [body('email').isEmail().withMessage('Please enter a valid email address'),
@@ -13,6 +14,15 @@ router.post('/register',
     body('vehicle.vehicleType').isIn(['motorcycle','car','auto']).withMessage('Vehicle type should be either motorcycle, car or auto')
 ], //yha hmm vehicle ki validation bhi krwa rahe hai
     captainController.registerCaptain); //yha jo bhi error aayega validation ke time toh sirf btata hai but agr uss error pe hmme action perform krna hai toh voh krenge uske saath use kiye hua controller ke andr, aur usme use krenge hmm validationResult.
+
+router.post('/login',[
+    body('email').isEmail().withMessage('Please enter a valid email address'),  //yeah validation ho rhi hai (express vbalidator se)
+    body('password').isLength({min:6}).withMessage('Password should be atleast 6 characters long')
+],captainController.loginCaptain); 
+
+router.get('/profile', authMiddleware.authCaptain ,captainController.getCaptainProfile); //yha hmm user ka profile dekhne ke liye route bana rahe hai
+
+router.get('/logout', authMiddleware.authCaptain, captainController.logoutCaptain);
 
 
 module.exports = router;
