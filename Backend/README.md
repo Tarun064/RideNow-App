@@ -215,3 +215,111 @@ The request must include the following header:
     "message": "Unauthorized"
 }
 ```
+
+---
+
+## Endpoint: `/captains/register`
+
+### Method: `POST`
+
+### Description
+This endpoint is used to register a new captain. It validates the input data, creates a captain in the database, and returns the captain's details.
+
+---
+
+### Request Body
+The request body must be in JSON format and include the following fields:
+
+| Field                     | Type     | Required | Description                                      |
+|---------------------------|----------|----------|--------------------------------------------------|
+| `fullname.firstname`      | `string` | Yes      | The first name of the captain (minimum 3 characters). |
+| `fullname.lastname`       | `string` | No       | The last name of the captain (minimum 3 characters if provided). |
+| `email`                   | `string` | Yes      | A valid email address.                          |
+| `password`                | `string` | Yes      | A password with a minimum of 6 characters.      |
+| `vehicle.color`           | `string` | Yes      | The color of the vehicle (minimum 3 characters). |
+| `vehicle.plate`           | `string` | Yes      | The license plate of the vehicle (minimum 3 characters). |
+| `vehicle.capacity`        | `number` | Yes      | The capacity of the vehicle (minimum 1).        |
+| `vehicle.vehicleType`     | `string` | Yes      | The type of the vehicle (`motorcycle`, `car`, or `auto`). |
+
+#### Example Request Body
+```json
+{
+    "fullname": {
+        "firstname": "Jane",
+        "lastname": "Doe"
+    },
+    "email": "jane.doe@example.com",
+    "password": "securePassword123",
+    "vehicle": {
+        "color": "Red",
+        "plate": "ABC123",
+        "capacity": 4,
+        "vehicleType": "car"
+    }
+}
+```
+
+---
+
+### Response Body
+The response body will be in JSON format and include the following fields:
+
+| Field               | Type     | Description                                      |
+|---------------------|----------|--------------------------------------------------|
+| `captain._id`       | `string` | The unique identifier of the captain.            |
+| `captain.fullname.firstname` | `string` | The first name of the captain.                 |
+| `captain.fullname.lastname`  | `string` | The last name of the captain.                  |
+| `captain.email`     | `string` | The email address of the captain.                |
+| `captain.vehicle.color` | `string` | The color of the vehicle.                      |
+| `captain.vehicle.plate` | `string` | The license plate of the vehicle.              |
+| `captain.vehicle.capacity` | `number` | The capacity of the vehicle.                  |
+| `captain.vehicle.vehicleType` | `string` | The type of the vehicle.                      |
+| `captain.createdAt` | `string` | The timestamp when the captain was created.      |
+| `captain.updatedAt` | `string` | The timestamp when the captain was last updated. |
+
+#### Example Response Body
+```json
+{
+    "captain": {
+        "_id": "captainId",
+        "fullname": {
+            "firstname": "Jane",
+            "lastname": "Doe"
+        },
+        "email": "jane.doe@example.com",
+        "vehicle": {
+            "color": "Red",
+            "plate": "ABC123",
+            "capacity": 4,
+            "vehicleType": "car"
+        },
+        "createdAt": "2025-04-07T10:00:00.000Z",
+        "updatedAt": "2025-04-07T10:00:00.000Z"
+    }
+}
+```
+
+---
+
+### Error Response Body
+The error response body will be in JSON format and include the following fields:
+
+#### Example Error Response Body
+```json
+    "errors": [
+        {
+            "msg": "Please enter a valid email address",
+            "param": "email",
+            "location": "body"
+        },
+        {
+            "msg": "First name should be atleast 3 characters long",
+            "param": "fullname.firstname",
+            "location": "body"
+        },
+        {
+            "msg": "Vehicle type should be either motorcycle, car or auto",
+            "param": "vehicle.vehicleType",
+            "location": "body"
+        }
+    ]
